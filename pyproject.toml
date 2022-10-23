@@ -15,3 +15,6 @@ beautifulsoup4 = "^4.11.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+doi2pdf = "doi2pdf.main:main"
