@@ -1,9 +1,8 @@
 import argparse
 from typing import Optional
-import subprocess
+import subprocess, os, platform
 import bs4
 import requests
-import os
 
 
 class NotFoundError(Exception):
@@ -49,8 +48,15 @@ def doi2pdf(
     with open(output, "wb") as f:
         f.write(pdf_content)
 
+    import subprocess, os, platform
+
     if open_pdf:
-        subprocess.call(["xdg-open", output])
+        if platform.system() == "Darwin":  # macOS
+            subprocess.call(("open", output))
+        elif platform.system() == "Windows":  # Windows
+            os.startfile(output)
+        else:  # linux variants
+            subprocess.call(("xdg-open", output))
 
 
 def get_paper_metadata(doi, name, url):
@@ -72,14 +78,14 @@ def get_paper_metadata(doi, name, url):
         metadata = metadata["results"][0]
 
     if metadata.get("doi") is not None:
-        doi = metadata["doi"][len("https://doi.org/"):]
+        doi = metadata["doi"][len("https://doi.org/") :]
     title = metadata["display_name"]
     pdf_url = metadata["open_access"]["oa_url"]
     if pdf_url is None:
         if metadata.get("host_venue") is not None:
             pdf_url = metadata["host_venue"]["url"]
         elif metadata.get("primary_location") is not None:
-            pdf_url = metadata['primary_location']['landing_page_url']
+            pdf_url = metadata["primary_location"]["landing_page_url"]
         else:
             raise NotFoundError("PDF URL not found.")
 
@@ -149,9 +155,7 @@ def main():
     )
 
     parser.add_argument(
-        "--open",
-        action="store_true",
-        help="Open the pdf file after downloading.",
+        "--open", action="store_true", help="Open the pdf file after downloading.",
     )
 
     args = parser.parse_args()
