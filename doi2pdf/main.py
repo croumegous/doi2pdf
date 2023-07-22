@@ -72,11 +72,16 @@ def get_paper_metadata(doi, name, url):
         metadata = metadata["results"][0]
 
     if metadata.get("doi") is not None:
-        doi = metadata["doi"][len("https://doi.org/") :]
+        doi = metadata["doi"][len("https://doi.org/"):]
     title = metadata["display_name"]
     pdf_url = metadata["open_access"]["oa_url"]
     if pdf_url is None:
-        pdf_url = metadata["host_venue"]["url"]
+        if metadata.get("host_venue") is not None:
+            pdf_url = metadata["host_venue"]["url"]
+        elif metadata.get("primary_location") is not None:
+            pdf_url = metadata['primary_location']['landing_page_url']
+        else:
+            raise NotFoundError("PDF URL not found.")
 
     print("Found paper: ", title)
     return doi, title, pdf_url
