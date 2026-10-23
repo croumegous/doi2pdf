@@ -27,7 +27,7 @@ doi2pdf("10.48550/arXiv.2203.15556", output="Chinchilla.pdf")
 ```
 
 
-## Troobleshooot
+## Troubleshoot
 
 - If error `DOI not found` appears it means sci hub could not retrieve the paper, you might need to override default sci-hub URL with a mirror, like so:
 
